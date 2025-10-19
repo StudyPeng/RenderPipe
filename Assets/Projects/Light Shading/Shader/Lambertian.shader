@@ -3,6 +3,7 @@ Shader "Custom/Lambertian"
     Properties
     {
         [MainColor] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
+        
     }
 
     SubShader
@@ -17,7 +18,6 @@ Shader "Custom/Lambertian"
         {
             HLSLPROGRAM
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
             #pragma vertex vert
             #pragma fragment frag
 
@@ -34,7 +34,7 @@ Shader "Custom/Lambertian"
             };
 
             float4 _BaseColor;
-
+            
             Varyings vert(Attributes input)
             {
                 Varyings output;
