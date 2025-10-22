@@ -21,8 +21,8 @@ Shader "Common/Transparent"
             }
             
             Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
-            ZTest LEqual
+            ZWrite On
+            ZTest GEqual
 
             HLSLPROGRAM
             #pragma vertex vert
