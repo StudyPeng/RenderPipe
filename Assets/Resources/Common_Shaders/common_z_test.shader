@@ -1,4 +1,4 @@
-Shader "Common/Transparent"
+Shader "Common/Z_Test"
 {
     Properties
     {
@@ -6,24 +6,21 @@ Shader "Common/Transparent"
     }
     SubShader
     {
-        Tags
-        {
-            "RenderType"="Transparent"
-            "Queue"="Transparent"
-            "RenderPipeline"="UniversalPipeline"
-        }
-
         Pass
         {
+            Name "Z_Test"
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite On
+            ZTest LEqual
+            
             Tags
             {
+                "RenderType"="Transparent"
+                "Queue"="Transparent"
+                "RenderPipeline"="UniversalPipeline"
                 "LightMode" = "UniversalForward"
             }
             
-            Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite On
-            ZTest GEqual
-
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag

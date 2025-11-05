@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Diagnostics;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
 using UnityEngine.Rendering.Universal;
@@ -7,36 +8,78 @@ namespace Projects.Outline.Scripts
 {
     public class BlitOutlineRenderPass : ScriptableRenderPass
     {
-        private class PassData
+        private class BlitOutlinePassData
         {
+            public TextureHandle Source;
+            public TextureHandle Copy;
+            public TextureHandle TemporaryTex;
+            public Material Mat;
         }
 
-        private BlitOutlineRenderFeature.BlitOutlineSettings _settings;
+        private readonly BlitOutlineRenderFeature.BlitOutlineSettings m_Settings;
+        private static readonly int ms_DepthTexProperty = Shader.PropertyToID("_SecTex");
+        private static readonly int ms_ColorTexProperty = Shader.PropertyToID("_ThirdTex");
+        private Material m_OutlineMat;
 
         public BlitOutlineRenderPass(BlitOutlineRenderFeature.BlitOutlineSettings settings)
         {
-            _settings = settings;
+            m_Settings = settings;
+            renderPassEvent = m_Settings.PassEvent + 1;
         }
-        
-        static void ExecutePass(PassData data, RasterGraphContext context)
+
+        public void Setup(Material temporaryMat)
         {
-            context.cmd.ClearRenderTarget(RTClearFlags.None, Color.black, 1, 1);
+            m_OutlineMat = temporaryMat;
         }
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
-            const string passName = "Blit Outline Pass";
-            using (var builder = renderGraph.AddRasterRenderPass<PassData>(passName, out var passData))
+            const string name = "PP Outline ";
+
+            UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
+            UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
+            RenderTextureDescriptor textureDesc = cameraData.cameraTargetDescriptor;
+            textureDesc.depthBufferBits = 0;
+            TextureHandle colorCopyTex = UniversalRenderer.CreateRenderGraphTexture(renderGraph, 
+                textureDesc, "_ColorCopyTex", true, FilterMode.Bilinear, TextureWrapMode.Clamp);
+
+            using (var copyBuilder =
+                   renderGraph.AddRasterRenderPass<BlitOutlinePassData>(name + " Copy Pass", out var passData))
             {
-                UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
-                UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
-                var colorDesc = resourceData.activeColorTexture;
-                builder.SetRenderAttachment(resourceData.activeColorTexture, 0);
-                builder.SetRenderFunc((PassData data, RasterGraphContext context) => ExecutePass(data, context));
+                passData.Source = resourceData.cameraColor;
+                passData.Copy = colorCopyTex;
+                copyBuilder.UseTexture(passData.Source);
+                copyBuilder.SetRenderAttachment(passData.Copy, 0);
+                copyBuilder.SetRenderFunc((BlitOutlinePassData copyData, RasterGraphContext context) =>
+                {
+                    Vector4 scaleBias = new Vector4(1, 1, 0, 0);
+                    Blitter.BlitTexture(context.cmd, copyData.Source, scaleBias, 0f, false);
+                });
             }
+
+            // TODO: First pass is working now.
+            // Some reason make second pass is not working.
+            // Maybe colorCopyTex framebuffer is null? or other.
+            using (var executeBuilder =
+                   renderGraph.AddRasterRenderPass<BlitOutlinePassData>(name + " Execute Pass", out var passData))
+            {
+                passData.Mat = m_OutlineMat;
+                executeBuilder.SetInputAttachment(colorCopyTex, 0);
+                executeBuilder.SetRenderAttachment(resourceData.cameraColor, 0);
+                // executeBuilder.AllowPassCulling(false);
+                executeBuilder.SetRenderFunc((BlitOutlinePassData executeData, RasterGraphContext context) =>
+                {
+                    Blitter.BlitTexture(context.cmd, Vector2.one, executeData.Mat, 0);
+                });
+            }
+            
         }
 
         public override void OnCameraCleanup(CommandBuffer cmd)
+        {
+        }
+
+        public void Dispose()
         {
         }
     }

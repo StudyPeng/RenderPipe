@@ -17,6 +17,7 @@ public class BlitOutlineRenderFeature : ScriptableRendererFeature
 
     public override void Create()
     {
+        name = "Outline";
         m_OutlinePass = new BlitOutlineRenderPass(Settings);
         m_OutlinePass.renderPassEvent = Settings.PassEvent;
     }
@@ -27,5 +28,10 @@ public class BlitOutlineRenderFeature : ScriptableRendererFeature
         {
             renderer.EnqueuePass(m_OutlinePass);
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        m_OutlinePass.Dispose();
     }
 }

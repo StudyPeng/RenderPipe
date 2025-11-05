@@ -23,7 +23,7 @@ public class BlitPixelClearPass : ScriptableRenderPass
     // FrameData is a context container through which URP resources can be accessed and managed.
     public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
     {
-        const string _passName = "Blit Pixel Clear Pass";
+        // const string _passName = "Blit Pixel Clear Pass";
 
         // This adds a raster render pass to the graph, specifying the name and the data type that will be passed to the ExecutePass function.
         using (var builder = renderGraph.AddRasterRenderPass<PassData>(passName, out var passData))
