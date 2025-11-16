@@ -9,16 +9,16 @@ Shader "Common/Z_Clip"
         Pass
         {
             Name "Z_Clip"
-
             Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
+            ZWrite On
             ZTest LEqual
 
             Tags
             {
                 "RenderType"="Transparent"
-                "Queue"="Transparent+1"
+                "Queue"="Transparent"
                 "RenderPipeline"="UniversalPipeline"
+                "LightMode" = "UniversalForward"
             }
 
             HLSLPROGRAM

@@ -29,9 +29,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   Settings:
-    Material: {fileID: 2100000, guid: 9bb723ea363d3e943b7354ddf5c984dd, type: 2}
+    OutlineMat: {fileID: 2100000, guid: 9bb723ea363d3e943b7354ddf5c984dd, type: 2}
+    DepthMat: {fileID: 2100000, guid: e3a3151cc6b1fa441b60aac4785b7099, type: 2}
+    UFloatMat: {fileID: 2100000, guid: ef5d42c9eca23fc4aa0842824262247e, type: 2}
     PassEvent: 500
-    Color: {r: 0, g: 0, b: 0, a: 0}
+    Color: {r: 1, g: 1, b: 1, a: 0}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

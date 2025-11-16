@@ -7,7 +7,9 @@ public class BlitOutlineRenderFeature : ScriptableRendererFeature
     [System.Serializable]
     public class BlitOutlineSettings
     {
-        public Material Material;
+        public Material OutlineMat;
+        public Material DepthMat;
+        public Material UFloatMat;
         public RenderPassEvent PassEvent = RenderPassEvent.AfterRenderingTransparents;
         [ColorUsage(true, true)] public Color Color;
     }
@@ -24,7 +26,7 @@ public class BlitOutlineRenderFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (Settings.Material != null)
+        if (Settings.OutlineMat != null)
         {
             renderer.EnqueuePass(m_OutlinePass);
         }
