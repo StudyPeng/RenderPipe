@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: common_z_test
+  m_Name: Common_Z_Test
   m_Shader: {fileID: 4800000, guid: 64d9efa6b61b4bf6a9bb86da0538c467, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
